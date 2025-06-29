@@ -4,6 +4,8 @@ import 'dart:async';
 import 'models/expense_model.dart';
 import 'services/calculation_service.dart';
 import 'services/storage_service.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'footer.dart';
 
 class Calculator extends StatefulWidget {
   @override
@@ -32,12 +34,10 @@ class _CalculatorState extends State<Calculator> {
         expenses = CalculationService.parseExpenses(input);
       });
 
-      // Salvar automaticamente
       _saveData();
     });
   }
 
-  // Salvar dados
   void _saveData() async {
     setState(() {
       _isSaving = true;
@@ -82,8 +82,18 @@ class _CalculatorState extends State<Calculator> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 25, 123, 189),
       appBar: AppBar(
-        title: Text('Calculadora Mocami'),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        title: Text(
+          'Mocami ',
+          style: GoogleFonts.roboto(
+            color: Color.fromARGB(255, 80, 179, 85),
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+            fontSize: 32,
+          ),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
@@ -106,12 +116,80 @@ class _CalculatorState extends State<Calculator> {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: expenses.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(
+                      expenses[index].description,
+                      style: GoogleFonts.roboto(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
+                    trailing: Text(
+                      expenses[index].value != null
+                          ? expenses[index].value!.toStringAsFixed(2)
+                          : '---',
+                      style: GoogleFonts.roboto(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            ListTile(
+              title: Text(
+                'Total',
+                style: GoogleFonts.ibmPlexSans(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 32,
+                  color: Colors.white,
+                ),
+              ),
+              trailing: Text(
+                total.toStringAsFixed(2),
+                style: GoogleFonts.ibmPlexSans(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 80, 179, 85),
+                  fontSize: 24,
+                ),
+              ),
+              onTap: () {
+                Clipboard.setData(
+                  ClipboardData(text: total.toStringAsFixed(2)),
+                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Total copiado!')));
+              },
+            ),
             TextField(
               controller: _textController,
               maxLines: 5,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Digite suas despesas (ex: Aluguel 500)',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                  borderSide: BorderSide(
+                    color: Color.fromARGB(255, 25, 123, 189),
+                    width: 2,
+                  ),
+                ),
+                hintText: 'Digite suas despesas (ex: Viagem 500)',
                 suffixIcon: _isSaving
                     ? Padding(
                         padding: EdgeInsets.all(12.0),
@@ -127,39 +205,8 @@ class _CalculatorState extends State<Calculator> {
                 _onInputChanged(value);
               },
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: expenses.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(expenses[index].description),
-                    trailing: Text(
-                      expenses[index].value != null
-                          ? expenses[index].value!.toStringAsFixed(2)
-                          : '---',
-                    ),
-                  );
-                },
-              ),
-            ),
-            ListTile(
-              title: Text(
-                'Total',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              trailing: Text(
-                total.toStringAsFixed(2),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Clipboard.setData(
-                  ClipboardData(text: total.toStringAsFixed(2)),
-                );
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('Total copiado!')));
-              },
-            ),
+            const SizedBox(height: 16.0),
+            const Footer(),
           ],
         ),
       ),
