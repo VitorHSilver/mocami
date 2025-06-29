@@ -1,16 +1,45 @@
-# mocami
+# 🧮 Calculadora Mocami
 
-A new Flutter project.
+Uma calculadora inteligente de despesas em Flutter com funcionalidades avançadas de expressões matemáticas e persistência de dados.
 
-## Getting Started
+## ✨ Funcionalidades
 
-This project is a starting point for a Flutter application.
+### 🧮 **Cálculos Inteligentes**
 
-A few resources to get you started if this is your first Flutter project:
+-    **Expressões simples**: `Aluguel 800`, `Energia 120.50`
+-    **Operações básicas**: `Combustível 5.59*40` → 223.60
+-    **Expressões complexas**: `Total (800+120)*12` → 11040.00
+-    **Parênteses**: `Desconto -(50+20)` → -70.00
+-    **Precedência matemática**: `Conta 2+3*4` → 14.00
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 💾 **Persistência de Dados**
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+-    **Auto-save**: Salva automaticamente enquanto você digita
+-    **Restauração**: Dados são carregados automaticamente ao abrir o app
+-    **Compatível**: Funciona em Android, iOS, Web e Desktop
+-    **Storage local**: Usa SharedPreferences (equivalente ao localStorage)
+
+### ⚡ **Performance Otimizada**
+
+-    **Debounce de 300ms**: Evita recálculos desnecessários
+-    **Parser híbrido**: Código próprio para operações simples, biblioteca para complexas
+-    **Interface responsiva**: Indicadores visuais de salvamento
+
+#### **Despesas Simples:**
+
+```
+Aluguel 800
+Energia 120.50
+Internet 89
+Água 45.30
+```
+
+#### **Cálculos Avançados:**
+
+```
+Energia base 100+50+20
+Combustível 5.59*40
+Parcela anual 1200/12
+Desconto total -(50+20)
+Investimento (1000+500)*1.1
+```

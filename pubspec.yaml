@@ -38,6 +38,9 @@ dependencies:
      # Math expressions library for advanced calculations
      math_expressions: ^2.4.0
 
+     # Local storage for persisting data
+     shared_preferences: ^2.2.0
+
 dev_dependencies:
      flutter_test:
           sdk: flutter
