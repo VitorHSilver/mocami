@@ -2,7 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Footer extends StatelessWidget {
-  const Footer({Key? key}) : super(key: key);
+  final Color backgroundColor;
+  final Color textColor;
+
+  const Footer({
+    Key? key,
+    required this.backgroundColor,
+    required this.textColor,
+  }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +21,9 @@ class Footer extends StatelessWidget {
         child: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            style: const TextStyle(fontSize: 12, color: Colors.white70),
+            style: TextStyle(fontSize: 12, color: textColor),
             children: [
-              const TextSpan(text: 'created by '),
+             TextSpan(text: 'created by '),
               WidgetSpan(
                 child: GestureDetector(
                   onTap: () async {
