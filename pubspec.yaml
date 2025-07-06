@@ -47,6 +47,9 @@ dependencies:
      # URL launcher for opening external links
      url_launcher: ^6.2.1
 
+     # Flutter launcher icons for generating app icons
+     flutter_launcher_icons: ^0.13.1
+
 dev_dependencies:
      flutter_test:
           sdk: flutter
@@ -98,3 +101,8 @@ flutter:
      #
      # For details regarding fonts from package dependencies,
      # see https://flutter.dev/to/font-from-package
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "lib/assets/icon/Mocami.png"

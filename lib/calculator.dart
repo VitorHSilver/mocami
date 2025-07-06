@@ -357,9 +357,7 @@ class _CalculatorState extends State<Calculator> {
                         tooltip: 'Adicionar despesas',
                         onPressed: _handleSubmit,
                         splashRadius: 20,
-                        color: widget.isDarkMode
-                            ? AppColors.darkTextSecondary
-                            : AppColors.lightTextSecondary,
+                        color: Colors.black,
                       ),
                 suffixIconConstraints: const BoxConstraints(
                   minHeight: 0,
