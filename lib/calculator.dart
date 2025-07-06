@@ -131,6 +131,20 @@ class _CalculatorState extends State<Calculator> {
           actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           actions: [
             TextButton(
+              onPressed: () {
+                setState(() {
+                  expenses.removeAt(index);
+                  input = expenses
+                      .map((e) =>
+                          '${e.description} ${e.value?.toStringAsFixed(2) ?? ''}')
+                      .join('\n');
+                  _saveData();
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text('Excluir', style: TextStyle(color: Colors.black)),
+            ),
+            TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text('Cancelar', style: TextStyle(color: Colors.black)),
             ),
@@ -212,6 +226,14 @@ class _CalculatorState extends State<Calculator> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                Icon(
+                  widget.isDarkMode ? Icons.brightness_2 : Icons.wb_sunny,
+                  color: widget.isDarkMode
+                      ? Colors.white
+                      : AppColors.darkAppBar,
+                  size: 20,
+                ),
+                SizedBox(width: 4),
                 Switch(
                   value: widget.isDarkMode,
                   onChanged: (value) {
@@ -222,26 +244,14 @@ class _CalculatorState extends State<Calculator> {
                   inactiveThumbColor: AppColors.darkAppBar,
                   inactiveTrackColor: Colors.grey[300],
                 ),
-                Row(
-                  children: [
-                    Icon(
-                      widget.isDarkMode ? Icons.brightness_2 : Icons.wb_sunny,
-                      color: widget.isDarkMode
-                          ? Colors.white
-                          : AppColors.darkAppBar,
-                      size: 20,
-                    ),
-                    SizedBox(width: 4),
-                  ],
-                ),
                 IconButton(
                   icon: Icon(
-                    Icons.delete,
+                    Icons.delete_sweep_rounded,
                     color: widget.isDarkMode
                         ? Colors.white
                         : AppColors.darkAppBar,
                   ),
-                  tooltip: 'Limpar lista de dados',
+                  tooltip: 'Limpar dados salvos',
                   onPressed: () async {
                     setState(() {
                       input = '';
@@ -259,123 +269,135 @@ class _CalculatorState extends State<Calculator> {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: expenses.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      expenses[index].description,
-                      style: GoogleFonts.roboto(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: widget.isDarkMode
-                            ? AppColors.darkTextPrimary
-                            : AppColors.lightTextPrimary,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: widget.isDarkMode
+                ? [AppColors.darkAppBar, AppColors.darkBackground]
+                : [AppColors.lightAppBar, AppColors.lightBackground],
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: expenses.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        expenses[index].description,
+                        style: GoogleFonts.roboto(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: widget.isDarkMode
+                              ? AppColors.darkTextPrimary
+                              : AppColors.lightTextPrimary,
+                        ),
                       ),
-                    ),
-                    trailing: Text(
-                      expenses[index].value != null
-                          ? expenses[index].value!.toStringAsFixed(2)
-                          : '---',
-                      style: GoogleFonts.roboto(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: widget.isDarkMode
-                            ? AppColors.darkTextSecondary
-                            : AppColors.lightTextSecondary,
+                      trailing: Text(
+                        expenses[index].value != null
+                            ? expenses[index].value!.toStringAsFixed(2)
+                            : '---',
+                        style: GoogleFonts.roboto(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: widget.isDarkMode
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
+                        ),
                       ),
-                    ),
-                    onTap: () => _editExpenseDialog(index),
-                  );
-                },
-              ),
-            ),
-            ListTile(
-              title: Text(
-                'Total',
-                style: GoogleFonts.ibmPlexSans(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 32,
-                  color: widget.isDarkMode
-                      ? AppColors.darkTextSecondary
-                      : AppColors.lightTextSecondary,
+                      onTap: () => _editExpenseDialog(index),
+                    );
+                  },
                 ),
               ),
-              trailing: Text(
-                total.toStringAsFixed(2),
-                style: GoogleFonts.ibmPlexSans(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: widget.isDarkMode
-                      ? AppColors.darkTextPrimary
-                      : AppColors.lightTextPrimary,
-                ),
-              ),
-              onTap: () {
-                Clipboard.setData(
-                  ClipboardData(text: total.toStringAsFixed(2)),
-                );
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('Total copiado!')));
-              },
-            ),
-            TextField(
-              controller: _textController,
-              maxLines: 5,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                  borderSide: BorderSide(
-                    color: Color.fromARGB(255, 25, 123, 189),
-                    width: 2,
+              ListTile(
+                title: Text(
+                  'Total',
+                  style: GoogleFonts.ibmPlexSans(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32,
+                    color: widget.isDarkMode
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
                   ),
                 ),
-                hintText: 'Digite suas despesas (ex: Viagem 500)',
-                suffixIcon: _isSaving
-                    ? SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : IconButton(
-                        icon: Icon(Icons.arrow_upward_sharp),
-                        tooltip: 'Adicionar despesas',
-                        onPressed: _handleSubmit,
-                        splashRadius: 20,
-                        color: Colors.black,
-                      ),
-                suffixIconConstraints: const BoxConstraints(
-                  minHeight: 0,
-                  minWidth: 0,
-                  maxHeight: 36,
+                trailing: Text(
+                  total.toStringAsFixed(2),
+                  style: GoogleFonts.ibmPlexSans(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: widget.isDarkMode
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
                 ),
+                onTap: () {
+                  Clipboard.setData(
+                    ClipboardData(text: total.toStringAsFixed(2)),
+                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Total copiado!')));
+                },
               ),
-              onSubmitted: (_) => _handleSubmit(),
-            ),
-            Footer(
-            backgroundColor: widget.isDarkMode
-                ? AppColors.darkAppBar
-                : AppColors.lightAppBar,
-            textColor: widget.isDarkMode
-                ? AppColors.darkTextSecondary
-                : AppColors.lightTextSecondary,
+              TextField(
+                controller: _textController,
+                maxLines: 5,
+                style: const TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 25, 123, 189),
+                      width: 2,
+                    ),
+                  ),
+                  hintText: 'Digite suas despesas (ex: Viagem 500)',
+                  suffixIcon: _isSaving
+                      ? SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : IconButton(
+                          icon: Icon(Icons.arrow_upward_sharp),
+                          tooltip: 'Adicionar despesas',
+                          onPressed: _handleSubmit,
+                          splashRadius: 20,
+                          color: Colors.black,
+                        ),
+                  suffixIconConstraints: const BoxConstraints(
+                    minHeight: 0,
+                    minWidth: 0,
+                    maxHeight: 36,
+                  ),
+                ),
+                onSubmitted: (_) => _handleSubmit(),
+              ),
+              Footer(
+                backgroundColor: widget.isDarkMode
+                    ? AppColors.darkAppBar
+                    : AppColors.lightAppBar,
+                textColor: widget.isDarkMode
+                    ? AppColors.darkTextSecondary
+                    : AppColors.lightTextSecondary,
+              ),
+            ],
           ),
-          ],
         ),
       ),
     );
