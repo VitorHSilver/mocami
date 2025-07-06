@@ -103,6 +103,7 @@ class _CalculatorState extends State<Calculator> {
               children: [
                 TextField(
                   controller: descController,
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Descrição',
                     border: OutlineInputBorder(
@@ -115,6 +116,7 @@ class _CalculatorState extends State<Calculator> {
                 SizedBox(height: 16),
                 TextField(
                   controller: valueController,
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Valor',
                     border: OutlineInputBorder(
@@ -131,18 +133,26 @@ class _CalculatorState extends State<Calculator> {
           actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           actions: [
             TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 204, 7, 7),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               onPressed: () {
                 setState(() {
                   expenses.removeAt(index);
                   input = expenses
-                      .map((e) =>
-                          '${e.description} ${e.value?.toStringAsFixed(2) ?? ''}')
+                      .map(
+                        (e) =>
+                            '${e.description} ${e.value?.toStringAsFixed(2) ?? ''}',
+                      )
                       .join('\n');
                   _saveData();
                 });
                 Navigator.of(context).pop();
               },
-              child: Text('Excluir', style: TextStyle(color: Colors.black)),
+              child: Text('Excluir', style: TextStyle(color: Colors.white)),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -162,11 +172,20 @@ class _CalculatorState extends State<Calculator> {
               ),
               onPressed: () {
                 setState(() {
+                  double? valor;
+                  try {
+                    final parsed = CalculationService.parseExpenses(
+                      'x ${valueController.text}',
+                    );
+                    valor = parsed.isNotEmpty ? parsed.first.value : null;
+                  } catch (_) {
+                    valor = double.tryParse(
+                      valueController.text.replaceAll(',', '.'),
+                    );
+                  }
                   expenses[index] = Expense(
                     description: descController.text,
-                    value: double.tryParse(
-                      valueController.text.replaceAll(',', '.'),
-                    ),
+                    value: valor,
                   );
                   input = expenses
                       .map(
@@ -218,7 +237,7 @@ class _CalculatorState extends State<Calculator> {
           style: GoogleFonts.roboto(
             fontWeight: FontWeight.bold,
             letterSpacing: 0.8,
-            fontSize: 20,
+            fontSize: 24,
           ),
         ),
         actions: [
