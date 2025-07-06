@@ -21,11 +21,10 @@ class _MeuAppState extends State<MeuApp> {
     _loadThemePreference();
   }
 
-  // ✅ Carregar preferência salva
   void _loadThemePreference() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _isDarkMode = prefs.getBool('isDarkMode') ?? false; // Default: modo claro
+      _isDarkMode = prefs.getBool('isDarkMode') ?? false; 
     });
   }
   

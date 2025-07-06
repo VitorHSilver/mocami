@@ -200,11 +200,11 @@ class _CalculatorState extends State<Calculator> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Mocami - Seu gerenciador de despesas',
+          'Mocami - Notepad+Calculator',
           style: GoogleFonts.roboto(
             fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-            fontSize: 32,
+            letterSpacing: 0.8,
+            fontSize: 20,
           ),
         ),
         actions: [
