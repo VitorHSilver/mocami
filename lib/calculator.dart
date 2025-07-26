@@ -76,11 +76,6 @@ class _CalculatorState extends State<Calculator> {
     }
   }
 
-  String getCurrentDate() {
-    final DateTime now = DateTime.now();
-    return '${now.day}/${now.month}';
-  }
-
   void _editExpenseDialog(int index) {
     final expense = expenses[index];
     final descController = TextEditingController(text: expense.description);
@@ -316,7 +311,7 @@ class _CalculatorState extends State<Calculator> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: '${getCurrentDate()} - ',
+                              text: '${expenses[index].formattedDate} - ',
                               style: TextStyle(
                                 color: widget.isDarkMode
                                     ? const Color.fromARGB(255, 146, 146, 146)
