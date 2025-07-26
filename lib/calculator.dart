@@ -312,14 +312,30 @@ class _CalculatorState extends State<Calculator> {
                   itemCount: expenses.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(
-                        '${getCurrentDate()} - ${expenses[index].description}',
-                        style: GoogleFonts.roboto(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: widget.isDarkMode
-                              ? AppColors.darkTextPrimary
-                              : AppColors.lightTextPrimary,
+                      title: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '${getCurrentDate()} - ',
+                              style: TextStyle(
+                                color: widget.isDarkMode
+                                    ? const Color.fromARGB(255, 146, 146, 146)
+                                    : const Color.fromARGB(218, 170, 170, 170),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            TextSpan(
+                              text: expenses[index].description,
+                              style: TextStyle(
+                                color: widget.isDarkMode
+                                    ? AppColors.darkTextPrimary
+                                    : AppColors.lightTextPrimary,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       trailing: Text(
