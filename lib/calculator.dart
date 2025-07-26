@@ -76,6 +76,11 @@ class _CalculatorState extends State<Calculator> {
     }
   }
 
+  String getCurrentDate() {
+    final DateTime now = DateTime.now();
+    return '${now.day}/${now.month}';
+  }
+
   void _editExpenseDialog(int index) {
     final expense = expenses[index];
     final descController = TextEditingController(text: expense.description);
@@ -233,11 +238,11 @@ class _CalculatorState extends State<Calculator> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Mocami - Notepad+Calculator',
+          'MOCAMI',
           style: GoogleFonts.roboto(
             fontWeight: FontWeight.bold,
             letterSpacing: 0.8,
-            fontSize: 24,
+            fontSize: 32,
           ),
         ),
         actions: [
@@ -308,7 +313,7 @@ class _CalculatorState extends State<Calculator> {
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(
-                        expenses[index].description,
+                        '${getCurrentDate()} - ${expenses[index].description}',
                         style: GoogleFonts.roboto(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
