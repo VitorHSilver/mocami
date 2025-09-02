@@ -7,6 +7,12 @@ import 'services/storage_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'footer.dart';
 import 'app_colors.dart';
+import 'dart:io';
+import 'package:cross_file/cross_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'utils/share_helper_stub.dart' if (dart.library.html) 'utils/share_helper_web.dart' as share_helper;
 
 class Calculator extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -73,6 +79,57 @@ class _CalculatorState extends State<Calculator> {
       setState(() {
         _isSaving = false;
       });
+    }
+  }
+
+   Future<void> _exportCsv() async {
+    if (expenses.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Nenhuma despesa para exportar')));
+      return;
+    }
+
+    final lines = <String>[];
+    lines.add('date,description,value');
+    for (final e in expenses) {
+      final date =
+          '${e.date.year.toString().padLeft(4, '0')}-${e.date.month.toString().padLeft(2, '0')}-${e.date.day.toString().padLeft(2, '0')}';
+      final desc = e.description.replaceAll('"', '""');
+      final value = e.value != null ? e.value!.toStringAsFixed(2) : '';
+      lines.add('"$date","$desc","$value"');
+    }
+
+    final csv = lines.join('\n');
+    final filename =
+        'mocami_export_${DateTime.now().toIso8601String().replaceAll(':', '-')}.csv';
+
+    try {
+      if (kIsWeb) {
+        // Web: trigger download via helper (uses dart:html)
+        await share_helper.shareCsv(filename, csv);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Download iniciado')),
+        );
+        return;
+      }
+
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$filename');
+      await file.writeAsString(csv);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Exportado: ${file.path}')),
+      );
+
+      try {
+        await Share.shareXFiles([XFile(file.path)], text: 'Exportação MOCAMI');
+      } catch (_) {
+        // ignore share errors
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao exportar: $e')),
+      );
     }
   }
 
@@ -263,25 +320,61 @@ class _CalculatorState extends State<Calculator> {
                   inactiveThumbColor: AppColors.darkAppBar,
                   inactiveTrackColor: Colors.grey[300],
                 ),
-                IconButton(
+                PopupMenuButton<String>(
+                  color: Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   icon: Icon(
-                    Icons.delete_sweep_rounded,
+                    Icons.more_vert,
                     color: widget.isDarkMode
                         ? Colors.white
                         : AppColors.darkAppBar,
                   ),
-                  tooltip: 'Limpar dados salvos',
-                  onPressed: () async {
-                    setState(() {
-                      input = '';
-                      expenses = [];
-                      _textController.clear();
-                    });
-                    await StorageService.clearAll();
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text('Dados limpos!')));
+                  onSelected: (value) async {
+                    if (value == 'clear') {
+                      setState(() {
+                        input = '';
+                        expenses = [];
+                        _textController.clear();
+                      });
+                      await StorageService.clearAll();
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Dados limpos!')));
+                    } else if (value == 'export') {
+                      await _exportCsv();
+                    }
                   },
+                  itemBuilder: (BuildContext context) => [
+                    PopupMenuItem<String>(
+                      value: 'clear',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, color: Colors.black),
+                          SizedBox(width: 12),
+                          Text(
+                            'Limpar dados salvos',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'export',
+                      child: Row(
+                        children: [
+                          Icon(Icons.share, color: Colors.black),
+                          SizedBox(width: 12),
+                          Text(
+                            'Exportar dados',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
